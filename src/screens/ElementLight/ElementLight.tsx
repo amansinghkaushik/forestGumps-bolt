@@ -1,64 +1,63 @@
 import React from "react";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import { ContactFormSection } from "./sections/ContactFormSection/ContactFormSection";
 import { ContentBlockSection } from "./sections/ContentBlockSection/ContentBlockSection";
-import { FeatureHighlightSection } from "./sections/FeatureHighlightSection/FeatureHighlightSection";
+import { InfoCard3 } from "./sections/InfoCard3/InfoCard3";
 import { HeroSection } from "./sections/HeroSection/HeroSection";
 import { ImageCarouselSection } from "./sections/ImageCarouselSection/ImageCarouselSection";
-import { InfoDisplaySection } from "./sections/InfoDisplaySection/InfoDisplaySection";
+import { InfoCard2 } from "./sections/InfoCard2/InfoCard2";
 import { MainContentSection } from "./sections/MainContentSection/MainContentSection";
 import { OverviewSection } from "./sections/OverviewSection/OverviewSection";
-import { PageWrapperSection } from "./sections/PageWrapperSection/PageWrapperSection";
+import { InfoCard1 } from "./sections/InfoCard1/InfoCard1";
 import { SiteFooterSection } from "./sections/SiteFooterSection/SiteFooterSection";
-
-const featureItems = [
-  {
-    text: "Transparancy",
-    className:
-      "w-[99px] h-[21px] left-10 [font-family:'Inter',Helvetica] font-normal text-[#333333] text-[15.4px] tracking-[0] leading-[19.2px] whitespace-nowrap",
-  },
-  {
-    text: "Green Energy",
-    className:
-      "w-[97px] h-[21px] left-[553px] [font-family:'Inter',Helvetica] font-normal text-[#333333] text-[15px] text-center tracking-[0] leading-[19.2px] whitespace-nowrap",
-  },
-  {
-    text: "Eco friendly",
-    className:
-      "w-[82px] h-[21px] left-[1081px] [font-family:'Inter',Helvetica] font-normal text-[#333333] text-[14.6px] text-right tracking-[0] leading-[19.2px] whitespace-nowrap",
-  },
-];
+import LoginTypeSelector from "./sections/LognCards/LoginTyleSelector";
+import ContributorLogin from "./sections/LognCards/ContributorLogin";
+import CompanyLogin from "./sections/LognCards/CompanyLogin";
+import AdminLogin from "./sections/LognCards/AdminLogin";
 
 export const ElementLight = (): JSX.Element => {
+  const navigate = useNavigate();
+
+  const handleSelectType = (type: string) => {
+    console.log(`Selected login type: ${type}`);
+    // TODO: Navigate to the appropriate login page based on type
+  };
+
+  const handleBack = () => {
+    // Navigate back to login type selector
+    navigate('/login-type-selector');
+  };
+
   return (
-    <div className="relative w-full bg-white">
-      <div className="relative w-full">
+    <Routes>
+      <Route path="/" element={
         <div className="relative w-full bg-white">
-          <div className="relative w-full max-w-[1203px] mx-auto">
-            <HeroSection />
-            <OverviewSection />
-            <MainContentSection />
-            <PageWrapperSection />
-            <InfoDisplaySection />
-            <FeatureHighlightSection />
-            <ContentBlockSection />
-            <ImageCarouselSection />
-            <ContactFormSection />
-            <SiteFooterSection />
+          <div className="relative w-full">
+            <div className="relative w-full bg-white">
+              <div className="relative w-full  mx-auto">
+                <HeroSection />
+                <OverviewSection />
+                <MainContentSection />
+                <InfoCard1 />
+                <InfoCard2 />
+                <InfoCard3 />
+                <ContentBlockSection />
+                <ImageCarouselSection />
+                <ContactFormSection />
+                <SiteFooterSection />
+              </div>
+            </div>
           </div>
         </div>
-
-        <img
-          className="absolute w-full h-[1200px] top-0 left-0"
-          alt="Iframe mask group"
-          src="/iframe-mask-group.svg"
-        />
-      </div>
-
-      <img
-        className="fixed w-[124px] h-[30px] top-[585px] right-[10px]"
-        alt="Container"
-        src="/container.svg"
-      />
-    </div>
+      } />
+      <Route path="/login-type-selector" element={
+        <div className="min-h-screen flex items-center justify-center bg-gray-100">
+          <LoginTypeSelector />
+        </div>
+      } />
+      <Route path="/contributor-login" element={<ContributorLogin onBack={handleBack} />} />
+      <Route path="/company-login" element={<CompanyLogin onBack={handleBack} />} />
+      <Route path="/admin-login" element={<AdminLogin onBack={handleBack} />} />
+    </Routes>
   );
 };

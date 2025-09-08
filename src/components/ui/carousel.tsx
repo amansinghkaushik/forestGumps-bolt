@@ -59,6 +59,9 @@ const Carousel = React.forwardRef<
       {
         ...opts,
         axis: orientation === "horizontal" ? "x" : "y",
+        loop: true,
+        dragFree: true,
+        containScroll: "trimSnaps",
       },
       plugins,
     );
@@ -94,6 +97,47 @@ const Carousel = React.forwardRef<
       },
       [scrollPrev, scrollNext],
     );
+
+    // Auto-scroll functionality
+    React.useEffect(() => {
+      if (!api) return;
+
+      let autoScrollInterval: NodeJS.Timeout;
+      
+      const startAutoScroll = () => {
+        autoScrollInterval = setInterval(() => {
+          api.scrollNext();
+        }, 3000); // Scroll every 3 seconds
+      };
+
+      const stopAutoScroll = () => {
+        if (autoScrollInterval) {
+          clearInterval(autoScrollInterval);
+        }
+      };
+
+      // Start auto-scroll initially
+      startAutoScroll();
+
+      // Stop auto-scroll on user interaction
+      const carousel = carouselRef.current;
+      if (carousel) {
+        carousel.addEventListener('mouseenter', stopAutoScroll);
+        carousel.addEventListener('mouseleave', startAutoScroll);
+        carousel.addEventListener('touchstart', stopAutoScroll);
+        carousel.addEventListener('touchend', startAutoScroll);
+      }
+
+      return () => {
+        stopAutoScroll();
+        if (carousel) {
+          carousel.removeEventListener('mouseenter', stopAutoScroll);
+          carousel.removeEventListener('mouseleave', startAutoScroll);
+          carousel.removeEventListener('touchstart', stopAutoScroll);
+          carousel.removeEventListener('touchend', startAutoScroll);
+        }
+      };
+    }, [api, carouselRef]);
 
     React.useEffect(() => {
       if (!api || !setApi) {
@@ -134,7 +178,7 @@ const Carousel = React.forwardRef<
         <div
           ref={ref}
           onKeyDownCapture={handleKeyDown}
-          className={cn("relative", className)}
+          className={cn("relative group", className)}
           role="region"
           aria-roledescription="carousel"
           {...props}
@@ -203,9 +247,9 @@ const CarouselPrevious = React.forwardRef<
       variant={variant}
       size={size}
       className={cn(
-        "absolute  h-8 w-8 rounded-full",
+        "absolute h-10 w-10 rounded-full bg-white/90 backdrop-blur-sm border-forest-green/20 hover:bg-forest-green hover:text-white transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-forest-green/25 opacity-0 group-hover:opacity-100",
         orientation === "horizontal"
-          ? "-left-12 top-1/2 -translate-y-1/2"
+          ? "-left-5 top-1/2 -translate-y-1/2"
           : "-top-12 left-1/2 -translate-x-1/2 rotate-90",
         className,
       )}
@@ -213,7 +257,7 @@ const CarouselPrevious = React.forwardRef<
       onClick={scrollPrev}
       {...props}
     >
-      <ArrowLeftIcon className="h-4 w-4" />
+      <ArrowLeftIcon className="h-5 w-5" />
       <span className="sr-only">Previous slide</span>
     </Button>
   );
@@ -232,9 +276,9 @@ const CarouselNext = React.forwardRef<
       variant={variant}
       size={size}
       className={cn(
-        "absolute h-8 w-8 rounded-full",
+        "absolute h-10 w-10 rounded-full bg-white/90 backdrop-blur-sm border-forest-green/20 hover:bg-forest-green hover:text-white transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-forest-green/25 opacity-0 group-hover:opacity-100",
         orientation === "horizontal"
-          ? "-right-12 top-1/2 -translate-y-1/2"
+          ? "-right-5 top-1/2 -translate-y-1/2"
           : "-bottom-12 left-1/2 -translate-x-1/2 rotate-90",
         className,
       )}
@@ -242,7 +286,7 @@ const CarouselNext = React.forwardRef<
       onClick={scrollNext}
       {...props}
     >
-      <ArrowRightIcon className="h-4 w-4" />
+      <ArrowRightIcon className="h-5 w-5" />
       <span className="sr-only">Next slide</span>
     </Button>
   );
